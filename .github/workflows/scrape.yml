@@ -2,6 +2,9 @@ on:
   schedule: 
     - cron: "0 * * * *"  # Every hour
 
+env:
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
 name: Scrape Data
 jobs:
   scrape-latest:
