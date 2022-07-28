@@ -1,0 +1,11 @@
+autopep8
+black
+bandit
+coverage
+fire
+flake8
+mypy
+pycodestyle
+pylint
+xmlrunner
+yapf

@@ -1,0 +1,75 @@
+// For format details, see https://aka.ms/vscode-remote/devcontainer.json or this file's README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.185.0/containers/python-3
+{
+    "name": "Python 3",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "..",
+        "args": {
+            // Update 'VARIANT' to pick a Python version: 3, 3.6, 3.7, 3.8, 3.9
+            "VARIANT": "3",
+            // Options
+            "INSTALL_NODE": "true",
+            "NODE_VERSION": "lts/*"
+        }
+    },
+    // Set *default* container specific settings.json values on container create.
+    "settings": {
+        "terminal.integrated.profiles.linux": {
+            "bash": {
+                "path": "/bin/bash"
+            }
+        },
+        "python.pythonPath": "/usr/local/bin/python",
+        "python.languageServer": "Pylance",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.linting.pylintArgs": [
+            "--extension-pkg-whitelist",
+            "pydantic",
+        ],
+        "python.formatting.autopep8Path": "/usr/local/bin/autopep8",
+        "python.formatting.blackPath": "/usr/local/bin/black",
+        "python.formatting.yapfPath": "/usr/local/bin/yapf",
+        "python.linting.banditPath": "/usr/local/bin/bandit",
+        "python.linting.flake8Path": "/usr/local/bin/flake8",
+        "python.linting.mypyPath": "/usr/local/bin/mypy",
+        "python.linting.pycodestylePath": "/usr/local/bin/pycodestyle",
+        "python.linting.pydocstylePath": "/usr/local/bin/pydocstyle",
+        "python.linting.pylintPath": "/usr/local/bin/pylint",
+        "python.formatting.provider": "black",
+        "editor.formatOnSave": true,
+        "python.linting.​flake8Args": [
+            "--max-line-length=88"
+        ],
+        "editor.rulers": [
+            88
+        ],
+    },
+    // Add the IDs of extensions you want installed when the container is created.
+    "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "njpwerner.autodocstring",
+        "graykode.ai-docstring",
+        "henriiik.docker-linter",
+        "mhutchie.git-graph",
+        "eamodio.gitlens",
+        "monokai.theme-monokai-pro-vscode",
+    ],
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    // "forwardPorts": [],
+    // Uncomment the next line to run commands after the container is created - for example installing curl.
+    // Uncomment when using a ptrace-based debugger like C++, Go, and Rust
+    // "runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
+    // Uncomment to use the Docker CLI from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker.
+    // "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
+    "mounts": [
+        "source=${localEnv:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached",
+        "source=${localEnv:HOME}${localEnv:USERPROFILE},target=${localEnv:HOME}${localEnv:USERPROFILE},type=bind,consistency=cached",
+        "source=${env:HOME}${env:USERPROFILE}/.aws,target=/root/.aws,type=bind",
+    ],
+    //"mounts": ["source=${localEnv:HOME}/.aws,target=/root/.aws,type=bind"]
+    // Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
+    // "remoteUser": "vscode"
+}
