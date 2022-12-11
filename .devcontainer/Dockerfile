@@ -13,6 +13,12 @@ RUN pip3 install -r requirements.txt \
     && pip3 install -r requirements-dev.txt
 
 
+RUN apt update && sudo apt upgrade -y
+RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+RUN apt -y update
+RUN apt install postgresql-14 -y 
+
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>

@@ -2,6 +2,9 @@ on:
   schedule: 
     - cron: "0 * * * *"  # Every hour
 
+env:
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
 name: Scrape Data
 jobs:
   scrape-latest:
@@ -17,4 +20,4 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Scrape
-        run: python main.py
+        run: python -m scrapper.main
