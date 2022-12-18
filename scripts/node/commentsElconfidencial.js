@@ -50,7 +50,7 @@ chromium
 
     const elConfidencial = new ElConfidencial(context);
     await elConfidencial.loadUrlRetry(urlFull);
-    const comments = await elConfidencial.getComments();
+    const comments = await elConfidencial.getCommentsRetry();
     console.log(comments);
 
     await upsertComments(comments, newsId, urlFull);
@@ -120,6 +120,10 @@ class ElConfidencial {
     }
     await this.page.screenshot({ path: 'screenshot_getComments.png' });
     return commentsRes;
+  }
+
+  async getCommentsRetry() {
+    return await pRetry(this.getComments, {retries: 2});
   }
 
   async _scrollToComments() {
