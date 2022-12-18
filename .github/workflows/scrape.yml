@@ -26,9 +26,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: cd scripts/node/
-      - run: npm ci
-      
+      - run: cd scripts/node/ && npm ci
+
       - name: Scrape
         env:
           DB_CONN_STRING: ${{ secrets.DB_CONN_STRING }}
