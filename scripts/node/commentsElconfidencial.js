@@ -1,6 +1,7 @@
 import { chromium } from "playwright-extra";
 import minimist from "minimist";
 import { parse } from "node-html-parser";
+import { publicIpv4 } from 'public-ip';
 import stealth from "puppeteer-extra-plugin-stealth";
 import userAgent from "user-agents";
 
@@ -42,6 +43,9 @@ chromium
     context.setDefaultTimeout(timeoutMs);
 
     // const page = await context.newPage();
+    const myPublicIP = await publicIpv4();
+    console.log("Actual IP:");
+    console.log(myPublicIP)
 
     const elConfidencial = new ElConfidencial(context);
     await elConfidencial.loadUrl(urlFull);
