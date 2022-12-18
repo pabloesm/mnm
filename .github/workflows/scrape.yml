@@ -22,4 +22,6 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Scrape
+        env:
+          DB_CONN_STRING: ${{ secrets.DB_CONN_STRING }}
         run: python -m scrapper.main
