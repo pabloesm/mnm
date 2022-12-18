@@ -13,7 +13,7 @@ from scrapper.news_summary import NewsSummary
 logging.basicConfig(level=logging.INFO)
 
 URL = "https://old.meneame.net/queue"
-
+# https://www.useragents.me/
 
 def main() -> None:
     # db.foo()
