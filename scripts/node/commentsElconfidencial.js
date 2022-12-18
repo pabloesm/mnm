@@ -33,7 +33,7 @@ chromium
     const context = await browser.newContext({
       userAgent: userAgent.toString(),
     });
-
+ 
     const timeoutMs = 200000;
     context.setDefaultTimeout(timeoutMs);
 

@@ -22,11 +22,14 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
 
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/checkout@v3
+        uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: cd scripts/node/ && npm ci
+      - name: Install packages
+        run: cd scripts/node/ && npm ci
+      
       - run: python -m scrapper.run_node_script
 
       - name: Scrape
