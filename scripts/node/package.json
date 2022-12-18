@@ -17,6 +17,7 @@
     "dependencies": {
         "minimist": "^1.2.7",
         "node-html-parser": "^6.1.4",
+        "p-retry": "^5.1.2",
         "pg": "^8.8.0",
         "playwright": "^1.28.1",
         "playwright-extra": "^4.3.5",

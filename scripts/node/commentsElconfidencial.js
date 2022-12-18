@@ -1,6 +1,7 @@
 import { chromium } from "playwright-extra";
 import minimist from "minimist";
 import { parse } from "node-html-parser";
+import pRetry from 'p-retry';
 import { publicIpv4 } from 'public-ip';
 import stealth from "puppeteer-extra-plugin-stealth";
 import userAgent from "user-agents";
@@ -27,11 +28,6 @@ const newsId = args.news_id;
 chromium
   .launch({
     headless: true,
-    proxy: {
-      server: '188.74.183.10:8279',
-      username: 'tahdrccj',
-      password: 'phyn15nz0j3m'
-    },
   })
   .then(async (browser) => {
     // Create a new incognito browser context with a proper user agent
@@ -48,7 +44,7 @@ chromium
     console.log(myPublicIP)
 
     const elConfidencial = new ElConfidencial(context);
-    await elConfidencial.loadUrl(urlFull);
+    await elConfidencial.loadUrlRetry(urlFull);
     const comments = await elConfidencial.getComments();
     console.log(comments);
 
@@ -78,6 +74,10 @@ class ElConfidencial {
       .click();
 
       await this.page.screenshot({ path: 'screenshot_loadUrl.png' });
+  }
+
+  async loadUrlRetry(url) {
+    await pRetry(() => this.loadUrl(url), {retries: 5});
   }
 
   async getComments() {
