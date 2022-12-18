@@ -28,8 +28,6 @@ jobs:
           node-version: 16
       - name: Install packages
         run: cd scripts/node/ && npm ci
-      
-      - run: python -m scrapper.run_node_script
 
       - name: Scrape
         env:

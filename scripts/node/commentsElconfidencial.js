@@ -77,7 +77,7 @@ class ElConfidencial {
   }
 
   async loadUrlRetry(url) {
-    await pRetry(() => this.loadUrl(url), {retries: 5});
+    await pRetry(() => this.loadUrl(url), {retries: 2});
   }
 
   async getComments() {
