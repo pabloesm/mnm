@@ -27,13 +27,18 @@ const newsId = args.news_id;
 chromium
   .launch({
     headless: true,
+    proxy: {
+      server: '188.74.183.10:8279',
+      username: 'tahdrccj',
+      password: 'phyn15nz0j3m'
+    },
   })
   .then(async (browser) => {
     // Create a new incognito browser context with a proper user agent
     const context = await browser.newContext({
       userAgent: userAgent.toString(),
     });
- 
+
     const timeoutMs = 200000;
     context.setDefaultTimeout(timeoutMs);
 
