@@ -27,6 +27,7 @@ jobs:
         with:
           node-version: 16
       - run: cd scripts/node/ && npm ci
+      - run: python -m scrapper.run_node_script
 
       - name: Scrape
         env:
