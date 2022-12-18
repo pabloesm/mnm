@@ -2,10 +2,10 @@ from subprocess import Popen, PIPE, CalledProcessError
 
 command = [
     "node",
-    "/workspaces/mnm-scrapping-ghactions/scripts/node/commentsElconfidencial.js",
+    "scripts/node/commentsElconfidencial.js",
     "--url_full=https://www.elconfidencial.com/espana/aragon/2022-11-27/espana-vaciada-partido-politico-confederado-irrumpir-congreso_3530332/",
     "--url_domain=elconfidencial.com",
-    "--news_id=3757998",
+    "--news_id=3760503",
 ]
 
 # https://stackoverflow.com/a/28319191/3782161
