@@ -33,3 +33,9 @@ jobs:
         env:
           DB_CONN_STRING: ${{ secrets.DB_CONN_STRING }}
         run: python -m scrapper.main
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact
+          path: path/to/artifact/ # or path/to/artifact
