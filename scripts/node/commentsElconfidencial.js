@@ -1,8 +1,8 @@
 import { chromium } from "playwright-extra";
 import minimist from "minimist";
 import { parse } from "node-html-parser";
-import pRetry from 'p-retry';
-import { publicIpv4 } from 'public-ip';
+import pRetry from "p-retry";
+import { publicIpv4 } from "public-ip";
 import stealth from "puppeteer-extra-plugin-stealth";
 import userAgent from "user-agents";
 
@@ -28,11 +28,11 @@ const newsId = args.news_id;
 chromium
   .launch({
     headless: true,
-    proxy: {
-      server: '188.74.183.10:8279',
-      username: 'tahdrccj',
-      password: 'phyn15nz0j3m'
-    },
+    // proxy: {
+    //   server: "188.74.183.10:8279",
+    //   username: "tahdrccj",
+    //   password: "phyn15nz0j3m",
+    // },
   })
   .then(async (browser) => {
     // Create a new incognito browser context with a proper user agent
@@ -46,7 +46,7 @@ chromium
     // const page = await context.newPage();
     const myPublicIP = await publicIpv4();
     console.log("Actual IP:");
-    console.log(myPublicIP)
+    console.log(myPublicIP);
 
     const elConfidencial = new ElConfidencial(context);
     await elConfidencial.loadUrlRetry(urlFull);
@@ -69,6 +69,8 @@ class ElConfidencial {
     this.page = await this.context.newPage();
     await this.page.goto(url);
 
+    await this.page.screenshot({ path: "01_gotoUrl.png" });
+
     const cookiesButtonText =
       "Aceptar y cerrar: Aceptar nuestro procesamiento de datos y cerrar";
     await this.page.getByRole("button", { name: cookiesButtonText }).click();
@@ -78,11 +80,11 @@ class ElConfidencial {
       .getByRole("button", { name: subscriptionButtonText })
       .click();
 
-      await this.page.screenshot({ path: 'screenshot_loadUrl.png' });
+    await this.page.screenshot({ path: "02_loadUrl.png" });
   }
 
   async loadUrlRetry(url) {
-    await pRetry(() => this.loadUrl(url), {retries: 2});
+    await pRetry(() => this.loadUrl(url), { retries: 2 });
   }
 
   async getComments() {
@@ -118,12 +120,12 @@ class ElConfidencial {
 
       commentsRes.push(parsedComment);
     }
-    await this.page.screenshot({ path: 'screenshot_getComments.png' });
+    await this.page.screenshot({ path: "03_getComments.png" });
     return commentsRes;
   }
 
   async getCommentsRetry() {
-    return await pRetry(this.getComments, {retries: 2});
+    return await pRetry(() => this.getComments(), { retries: 2 });
   }
 
   async _scrollToComments() {
