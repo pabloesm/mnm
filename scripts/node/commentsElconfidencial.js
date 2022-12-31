@@ -40,7 +40,7 @@ chromium
       userAgent: userAgent.toString(),
     });
 
-    const timeoutMs = 200000;
+    const timeoutMs = 100000;
     context.setDefaultTimeout(timeoutMs);
 
     // const page = await context.newPage();

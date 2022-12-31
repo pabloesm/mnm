@@ -37,5 +37,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: my-artifact
-          path: path/to/artifact/ # or path/to/artifact
+          name: snapshots
+          path: *.png  # or path/to/artifact
