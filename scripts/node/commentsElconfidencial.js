@@ -71,14 +71,22 @@ class ElConfidencial {
 
     await this.page.screenshot({ path: "01_gotoUrl.png" });
 
-    const cookiesButtonText =
-      "Aceptar y cerrar: Aceptar nuestro procesamiento de datos y cerrar";
-    await this.page.getByRole("button", { name: cookiesButtonText }).click();
+    try {
+      const cookiesButtonText =
+        "Aceptar y cerrar: Aceptar nuestro procesamiento de datos y cerrar";
+      await this.page.getByRole("button", { name: cookiesButtonText }).click();
+    } catch (error) {
+      console.error(error);
+    }
 
-    const subscriptionButtonText = "Ahora no";
-    await this.page
-      .getByRole("button", { name: subscriptionButtonText })
-      .click();
+    try {
+      const subscriptionButtonText = "Ahora no";
+      await this.page
+        .getByRole("button", { name: subscriptionButtonText })
+        .click();
+    } catch (error) {
+      console.error(error);
+    }
 
     await this.page.screenshot({ path: "02_loadUrl.png" });
   }
