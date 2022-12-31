@@ -14,11 +14,9 @@ def main() -> None:
     logging.info("main() starting")
     try:
         run_node_script(url_full, url_domain, news_id)
+        update_queue()
     except Exception:
-        print("Second try in Python")
-        run_node_script(url_full, url_domain, news_id)
-
-    update_queue()
+        logging.info("Scrapper failed.")
 
     logging.info("main() done")
 
