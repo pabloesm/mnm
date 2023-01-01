@@ -1,7 +1,6 @@
-# on:
-#   schedule:
-#     - cron: "0 */2 * * *"  # Every 2 hours
-
+on:
+  schedule:
+    - cron: "0 */2 * * *"  # Every 2 hours
 # on: workflow_dispatch
 
 env:
