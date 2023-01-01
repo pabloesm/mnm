@@ -2,8 +2,7 @@ import crypto from "crypto";
 import pkg from "pg";
 const { Pool } = pkg;
 
-let connString =
-  "postgresql://meneame:gcy9U4IRzTdl@restless-meadow-475114.cloud.neon.tech:5432/mnm?ssl=true";
+let connString =process.env.DB_CONN_STRING
 
 const pool = new Pool({
   connectionString: connString,
@@ -60,8 +59,10 @@ export async function upsertComments(comments, newsId, urlFull) {
       ];
       const res = await query(sqlQuery, values);
       console.log(res.rows[0]);
+      return 0;
     } catch (err) {
       console.log(err);
+      return 1;
     }
   }
 }

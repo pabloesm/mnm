@@ -1,3 +1,18 @@
+#!/usr/bin/nodejs
+
+/*
+Return codes:
+ - 0: successfuly comments extracted and stored 
+ - 1:  
+
+Calling example (news_id should exist in the DB to write store the data):
+node inspect commentsElconfidencial.js \
+  --url_full=https://www.elconfidencial.com/espana/aragon/2022-11-27/espana-vaciada-partido-politico-confederado-irrumpir-congreso_3530332/ \
+  --url_domain=elconfidencial.com \
+  --news_id=3764927 
+
+  
+  */
 import { chromium } from "playwright-extra";
 import minimist from "minimist";
 import { parse } from "node-html-parser";
@@ -12,12 +27,6 @@ chromium.use(stealth);
 
 const args = minimist(process.argv.slice(2));
 
-/*
-node inspect commentsElconfidencial.js \
-  --url_full=https://www.elconfidencial.com/espana/aragon/2022-11-27/espana-vaciada-partido-politico-confederado-irrumpir-congreso_3530332/ \
-  --url_domain=elconfidencial.com \
-  --news_id=3757998 
-""*/
 // Print the parsed arguments
 console.log(args);
 

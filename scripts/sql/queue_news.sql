@@ -1,7 +1,7 @@
 drop table if exists queue_news cascade;
 
 create table queue_news (
-    news_id bigint primary key,
+	news_id bigint primary key,
 	title varchar(500) not null,
 	meneos int not null,
 	clicks int not null,
@@ -10,7 +10,10 @@ create table queue_news (
 	karma int not null,
 	url_full varchar(500) not null,
 	url_domain varchar(500) not null,
-	time_send timestamptz,
-	updated_at timestamptz,
-	is_commented boolean
+	time_send timestamptz not null,
+	updated_at timestamptz not null,
+	is_commented boolean not null,
+	is_discarded boolean not null,
+	are_comments_extracted boolean not null,
+	comment_extraction_history json not null
 );
