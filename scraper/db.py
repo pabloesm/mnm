@@ -1,5 +1,6 @@
 import datetime
 import os
+from typing import List, Dict
 
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
@@ -116,7 +117,7 @@ def update_news_status(
     is_discarded: bool,
     are_comments_extracted: bool,
     comment_extraction_history: str,
-) -> list[dict]:
+) -> List[Dict]:
     statement = text(
         """
         UPDATE queue_news
@@ -143,7 +144,7 @@ def update_news_status(
     return res.mappings().all()
 
 
-def delete_news_previous_to(timedelta: datetime.timedelta) -> list[dict]:
+def delete_news_previous_to(timedelta: datetime.timedelta) -> List[Dict]:
     # select * from queue_news where time_send < '2023-01-01 15:00:00+00';
     current_time = datetime.datetime.now()
     datetime_threshold = current_time - timedelta
