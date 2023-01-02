@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+from typing import List
 
 from bs4 import BeautifulSoup
 import requests
@@ -16,7 +17,7 @@ URL = "https://old.meneame.net/queue"
 # https://www.useragents.me/
 
 
-def refresh() -> list[NewsSummary]:
+def refresh() -> List[NewsSummary]:
     """Scrape the last version of the Meneame queue"""
     current_time = datetime.datetime.now()
     logging.info(current_time)
@@ -82,7 +83,7 @@ def update_status(news_id: int, exit_code: int) -> None:
     )
 
 
-def filter_news(news: list[NewsSummary]) -> list[NewsSummary]:
+def filter_news(news: List[NewsSummary]) -> List[NewsSummary]:
     # Filter by managed domains
     managed_domains = DOMAIN_TO_SCRIPT.keys()
     filtered_domain = [el for el in news if el.get_url_domain() in managed_domains]
