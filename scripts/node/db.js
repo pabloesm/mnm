@@ -2,7 +2,9 @@ import crypto from "crypto";
 import pkg from "pg";
 const { Pool } = pkg;
 
-let connString =process.env.DB_CONN_STRING
+let connString = process.env.DB_CONN_STRING
+// TODO: make it more robust 
+connString = connString.concat('&ssl=true')
 
 const pool = new Pool({
   connectionString: connString,
