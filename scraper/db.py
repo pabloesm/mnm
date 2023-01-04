@@ -151,11 +151,13 @@ def delete_news_previous_to(timedelta: datetime.timedelta) -> List[Dict]:
     datetime_threshold = current_time - timedelta
     statement = text(
         """
-        DELETE FROM  queue_news qn
-        LEFT JOIN "comments" c ON qn.news_id = c.news_id
-        WHERE
-            time_send < :datetime_threshold AND
-            c.news_id IS NOT NULL
+        DELETE FROM queue_news qn
+        WHERE qn.news_id IN (
+            SELECT qn.news_id
+            FROM queue_news qn
+            LEFT JOIN "comments" c ON qn.news_id = c.news_id
+            WHERE time_send < :datetime_threshold AND c.news_id IS NULL
+        )
         RETURNING *;
         """
     )
