@@ -145,13 +145,17 @@ def update_news_status(
 
 
 def delete_news_previous_to(timedelta: datetime.timedelta) -> List[Dict]:
-    # select * from queue_news where time_send < '2023-01-01 15:00:00+00';
+    """Delete news previous to a given datetime that do not contain comments"""
+
     current_time = datetime.datetime.now()
     datetime_threshold = current_time - timedelta
     statement = text(
         """
-        DELETE FROM queue_news
-        WHERE time_send < :datetime_threshold
+        DELETE FROM  queue_news qn
+        LEFT JOIN "comments" c ON qn.news_id = c.news_id
+        WHERE
+            time_send < :datetime_threshold AND
+            c.news_id IS NOT NULL
         RETURNING *;
         """
     )
