@@ -77,7 +77,7 @@ class ElConfidencial {
     this.page = await this.context.newPage();
     await this.page.goto(url);
 
-    await this.page.screenshot({ path: "01_gotoUrl.png" });
+    await this.page.screenshot({ path: `${newsId}_01_gotoUrl.png` });
 
     try {
       const cookiesButtonText =
@@ -96,7 +96,7 @@ class ElConfidencial {
       console.error(error);
     }
 
-    await this.page.screenshot({ path: "02_loadUrl.png" });
+    await this.page.screenshot({ path: `${newsId}_02_loadUrl.png` });
   }
 
   async loadUrlRetry(url) {
@@ -136,7 +136,7 @@ class ElConfidencial {
 
       commentsRes.push(parsedComment);
     }
-    await this.page.screenshot({ path: "03_getComments.png" });
+    await this.page.screenshot({ path: `${newsId}_03_getComments.png` });
     return commentsRes;
   }
 
