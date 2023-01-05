@@ -37,12 +37,12 @@ RETURNING *
 `;
 
 export async function upsertComments(comments, newsId, urlFull) {
-  console.log("========= upsertComments");
-  console.log(comments);
+  console.log("Upserting comments...");
   console.log(newsId);
   console.log(urlFull);
-
+  
   for (let i = 0; i < comments.length; i++) {
+    console.log(comments[i].substring(0, 80));
     try {
       const currentTime = new Date();
 

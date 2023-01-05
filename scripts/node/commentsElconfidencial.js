@@ -59,12 +59,13 @@ chromium
     const elConfidencial = new ElConfidencial(context);
     await elConfidencial.loadUrlRetry(urlFull);
     const comments = await elConfidencial.getCommentsRetry();
-    console.log(comments);
+    console.log(f`Extracted ${comments.length} comments`)
 
-    await upsertComments(comments, newsId, urlFull);
+    let exitCode = await upsertComments(comments, newsId, urlFull);
 
     console.log("All done ✨");
     await browser.close();
+    process.exitCode = exitCode;
   });
 
 class ElConfidencial {
