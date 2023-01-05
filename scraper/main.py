@@ -16,10 +16,6 @@ from scraper.extract_comments import extract_comments
 
 logging.basicConfig(level=logging.INFO)
 
-url_full = "https://www.elconfidencial.com/espana/aragon/2022-11-27/espana-vaciada-partido-politico-confederado-irrumpir-congreso_3530332/"
-url_domain = "elconfidencial.com"
-news_id = 3760503
-
 
 def main() -> None:
     logging.info("main() starting")

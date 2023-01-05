@@ -42,7 +42,7 @@ export async function upsertComments(comments, newsId, urlFull) {
   console.log(`url: ${urlFull}`);
   
   for (let i = 0; i < comments.length; i++) {
-    console.log(`Comment ${i}: ${comments[i].substring(0, 80)}`);
+    console.log(`Comment ${i}: ${comments[i].comment.substring(0, 80)}`);
     try {
       const currentTime = new Date();
 
@@ -60,7 +60,7 @@ export async function upsertComments(comments, newsId, urlFull) {
         currentTime.toISOString(),
       ];
       const res = await query(sqlQuery, values);
-      console.log(res.rows[0]);
+      // console.log(res.rows[0]);
     } catch (err) {
       console.log(err);
       return 1;

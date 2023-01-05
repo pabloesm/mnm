@@ -84,6 +84,15 @@ def update_status(news_id: int, exit_code: int) -> None:
 
 
 def filter_news(news: List[NewsSummary]) -> List[NewsSummary]:
+    filtering_statistics = {
+        "initial_news": len(news),
+        "filtered_domain": 0,
+        "is_commented": 0,
+        "is_discarded": 0,
+        "are_comments_extracted": 0,
+        "manageable_news": 0,
+    }
+
     # Filter by managed domains
     managed_domains = DOMAIN_TO_SCRIPT.keys()
     filtered_domain = [el for el in news if el.get_url_domain() in managed_domains]
@@ -92,6 +101,14 @@ def filter_news(news: List[NewsSummary]) -> List[NewsSummary]:
     manageable_news = []
     for element in filtered_domain:
         news_data = db.read_news(element.get_news_id())
+
+        if news_data["is_commented"]:
+            filtering_statistics["is_commented"] += 1
+        if news_data["is_discarded"]:
+            filtering_statistics["is_discarded"] += 1
+        if news_data["are_comments_extracted"]:
+            filtering_statistics["are_comments_extracted"] += 1
+
         flags = [
             news_data["is_commented"],
             news_data["is_discarded"],
@@ -100,5 +117,9 @@ def filter_news(news: List[NewsSummary]) -> List[NewsSummary]:
         if any(flags):
             continue
         manageable_news.append(element)
+
+    filtering_statistics["filtered_domain"] = len(news) - len(filtered_domain)
+    filtering_statistics["manageable_news"] = len(manageable_news)
+    logging.info(filtering_statistics)
 
     return manageable_news
