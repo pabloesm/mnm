@@ -61,10 +61,10 @@ export async function upsertComments(comments, newsId, urlFull) {
       ];
       const res = await query(sqlQuery, values);
       console.log(res.rows[0]);
-      return 0;
     } catch (err) {
       console.log(err);
       return 1;
     }
   }
+  return 0;
 }
