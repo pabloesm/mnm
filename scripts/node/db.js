@@ -42,7 +42,7 @@ export async function upsertComments(comments, newsId, urlFull) {
   console.log(urlFull);
   
   for (let i = 0; i < comments.length; i++) {
-    console.log(comments[i].substring(0, 80));
+    console.log(`Comment ${i}: ${comments[i].substring(0, 80)}`);
     try {
       const currentTime = new Date();
 
