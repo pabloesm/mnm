@@ -38,8 +38,8 @@ RETURNING *
 
 export async function upsertComments(comments, newsId, urlFull) {
   console.log("Upserting comments...");
-  console.log(newsId);
-  console.log(urlFull);
+  console.log(`newsId: ${newsId}`);
+  console.log(`url: ${urlFull}`);
   
   for (let i = 0; i < comments.length; i++) {
     console.log(`Comment ${i}: ${comments[i].substring(0, 80)}`);
