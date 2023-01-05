@@ -59,7 +59,7 @@ chromium
     const elConfidencial = new ElConfidencial(context);
     await elConfidencial.loadUrlRetry(urlFull);
     const comments = await elConfidencial.getCommentsRetry();
-    console.log(f`Extracted ${comments.length} comments`)
+    console.log(`Extracted ${comments.length} comments`)
 
     let exitCode = await upsertComments(comments, newsId, urlFull);
 

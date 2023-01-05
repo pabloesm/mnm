@@ -37,7 +37,7 @@ RETURNING *
 `;
 
 export async function upsertComments(comments, newsId, urlFull) {
-  console.log("Upserting comments...");
+  console.log("\nUpserting comments...");
   console.log(`newsId: ${newsId}`);
   console.log(`url: ${urlFull}`);
   
