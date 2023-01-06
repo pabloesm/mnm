@@ -76,20 +76,12 @@ def upsert_news(news: dict):
         ON CONFLICT (news_id) 
         DO
             UPDATE SET 
-                title = :title,
                 meneos = :meneos,
                 clicks = :clicks,
                 votes_positive = :votes_positive,
                 votes_negative = :votes_negative,
                 karma = :karma,
-                url_full = :url_full,
-                url_domain = :url_domain,
-                time_send = :time_send,
-                updated_at = :updated_at,
-                is_commented = :is_commented,
-                is_discarded = :is_discarded,
-                are_comments_extracted = :are_comments_extracted,
-                comment_extraction_history = :comment_extraction_history
+                updated_at = :updated_at
         """
     )
     with engine.connect() as con:

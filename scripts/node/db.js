@@ -33,6 +33,15 @@ INSERT
     updated_at
   )
 VALUES ($1, $2, $3, $4, $5, $6, $7)
+ON CONFLICT (comment_md5_id)
+DO
+  UPDATE SET
+    news_id = $2,
+    comment_text = $3,
+    votes_positive = $4,
+    votes_negative = $5,
+    url_full = $6,
+    updated_at = $7
 RETURNING *
 `;
 
@@ -49,6 +58,7 @@ export async function upsertComments(comments, newsId, urlFull) {
       const hash = crypto.createHash("md5");
       hash.update(comments[i].comment);
       const hashDigest = hash.digest("hex");
+      console.log(hashDigest)
 
       const values = [
         hashDigest,

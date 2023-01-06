@@ -73,6 +73,17 @@ def update_status(news_id: int, exit_code: int) -> None:
     else:
         is_discarded = False
 
+    logging.info(
+        {
+            "news_id": news_id,
+            "updated_at": current_time.isoformat(),
+            "is_commented": current_status["is_commented"],
+            "is_discarded": is_discarded,
+            "are_comments_extracted": are_comments_extracted,
+            "comment_extraction_history": history,
+        }
+    )
+
     db.update_news_status(
         news_id=news_id,
         updated_at=current_time.isoformat(),
@@ -89,7 +100,6 @@ def filter_news(news: List[NewsSummary]) -> List[NewsSummary]:
         "filtered_domain": 0,
         "is_commented": 0,
         "is_discarded": 0,
-        "are_comments_extracted": 0,
         "manageable_news": 0,
     }
 
@@ -106,13 +116,10 @@ def filter_news(news: List[NewsSummary]) -> List[NewsSummary]:
             filtering_statistics["is_commented"] += 1
         if news_data["is_discarded"]:
             filtering_statistics["is_discarded"] += 1
-        if news_data["are_comments_extracted"]:
-            filtering_statistics["are_comments_extracted"] += 1
 
         flags = [
             news_data["is_commented"],
             news_data["is_discarded"],
-            news_data["are_comments_extracted"],
         ]
         if any(flags):
             continue
