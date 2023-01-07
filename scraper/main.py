@@ -1,10 +1,13 @@
 """
-- Check news queue
-- For domains available in the processing pipeline:
-    - Check if URL is already processed (some invalidation mechanism for checking 
-        if there are more comments after a while?)
+- Check news queue (update `queue_news`)
+- For manageable URLs (managed domain, not commented and not discarded):
     - Process URL (aka extract comments)
-- 
+    - Update `comments` and URL status in `queue_news`
+
+- For commentable URLs (not commented, comments extracted)
+    - Select suitable user
+    - Comment
+    - Update `published_comments` and URL status in `queue_news`
 """
 
 import datetime
@@ -12,6 +15,7 @@ import logging
 
 from scraper import db
 from scraper import mnm_queue
+from scraper.comment_story import comment_story
 from scraper.extract_comments import extract_comments
 
 logging.basicConfig(level=logging.INFO)
@@ -19,6 +23,9 @@ logging.basicConfig(level=logging.INFO)
 
 def main() -> None:
     logging.info("main() starting")
+
+    comment_story()
+    breakpoint()
 
     try:
         news = mnm_queue.refresh()

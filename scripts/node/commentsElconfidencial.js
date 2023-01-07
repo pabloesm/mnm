@@ -22,6 +22,7 @@ import stealth from "puppeteer-extra-plugin-stealth";
 import userAgent from "user-agents";
 
 import { upsertComments } from "./db.js";
+import { Utils } from "./utils.js";
 
 chromium.use(stealth);
 
@@ -69,7 +70,7 @@ chromium
   });
 
 class ElConfidencial {
-  constructor(context, Utils) {
+  constructor(context) {
     this.context = context;
     this.Utils = Utils;
   }
