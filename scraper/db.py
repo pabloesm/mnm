@@ -9,7 +9,7 @@ from sqlalchemy.sql import text
 conn_string = os.environ.get("DB_CONN_STRING")
 
 if conn_string is None:
-    ValueError("Environment variable DB_CONN_STRING not set.")
+    raise ValueError("Environment variable DB_CONN_STRING not set.")
 else:
     engine = create_engine(conn_string, connect_args={"sslmode": "require"}, echo=False)
 
@@ -57,10 +57,10 @@ def upsert_news(news: dict):
             :is_discarded,
             :are_comments_extracted,
             :comment_extraction_history
-        ) 
-        ON CONFLICT (news_id) 
+        )
+        ON CONFLICT (news_id)
         DO
-            UPDATE SET 
+            UPDATE SET
                 meneos = :meneos,
                 clicks = :clicks,
                 votes_positive = :votes_positive,
