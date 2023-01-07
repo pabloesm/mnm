@@ -42,7 +42,7 @@ def refresh() -> List[NewsSummary]:
         news_data = summary.info()
         current_time = datetime.datetime.now()
         news_data["updated_at"] = current_time.isoformat()
-        news_data["is_commented"] = False
+        news_data["story_comments_history"] = json.dumps([])
         news_data["is_discarded"] = False
         news_data["are_comments_extracted"] = False
         history = json.dumps([])
@@ -77,7 +77,7 @@ def update_status(news_id: int, exit_code: int) -> None:
         {
             "news_id": news_id,
             "updated_at": current_time.isoformat(),
-            "is_commented": current_status["is_commented"],
+            "story_comments_history": current_status["story_comments_history"],
             "is_discarded": is_discarded,
             "are_comments_extracted": are_comments_extracted,
             "comment_extraction_history": history,
@@ -87,7 +87,7 @@ def update_status(news_id: int, exit_code: int) -> None:
     db.update_news_status(
         news_id=news_id,
         updated_at=current_time.isoformat(),
-        is_commented=current_status["is_commented"],
+        story_comments_history=current_status["story_comments_history"],
         is_discarded=is_discarded,
         are_comments_extracted=are_comments_extracted,
         comment_extraction_history=json.dumps(history),
@@ -98,7 +98,6 @@ def filter_news(news: List[NewsSummary]) -> List[NewsSummary]:
     filtering_statistics = {
         "initial_news": len(news),
         "filtered_domain": 0,
-        "is_commented": 0,
         "is_discarded": 0,
         "manageable_news": 0,
     }
@@ -112,13 +111,10 @@ def filter_news(news: List[NewsSummary]) -> List[NewsSummary]:
     for element in filtered_domain:
         news_data = db.read_news(element.get_news_id())
 
-        if news_data["is_commented"]:
-            filtering_statistics["is_commented"] += 1
         if news_data["is_discarded"]:
             filtering_statistics["is_discarded"] += 1
 
         flags = [
-            news_data["is_commented"],
             news_data["is_discarded"],
         ]
         if any(flags):

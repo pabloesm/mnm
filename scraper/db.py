@@ -23,21 +23,6 @@ def check_db_availability():
 
 
 def upsert_news(news: dict):
-    # data = {
-    #     "news_id": 0,
-    #     "title": "título",
-    #     "id": 12,
-    #     "meneos": 0,
-    #     "clicks": 0,
-    #     "votes_positive": 0,
-    #     "votes_negative": 0,
-    #     "karma": 0,
-    #     "url_full": "www.example.com/23",
-    #     "url_domain": "www.example.com",
-    #     "time_send": "1999-01-08 04:05:06",
-    #     "updated_at": "1999-01-11 04:05:06",
-    #     "is_commented": True,
-    # }
     statement = text(
         """
         INSERT INTO queue_news(
@@ -52,7 +37,7 @@ def upsert_news(news: dict):
             url_domain,
             time_send,
             updated_at,
-            is_commented,
+            story_comments_history,
             is_discarded,
             are_comments_extracted,
             comment_extraction_history
@@ -68,7 +53,7 @@ def upsert_news(news: dict):
             :url_domain,
             :time_send,
             :updated_at,
-            :is_commented,
+            :story_comments_history,
             :is_discarded,
             :are_comments_extracted,
             :comment_extraction_history
@@ -105,7 +90,7 @@ def read_news(news_id: int) -> dict:
 def update_news_status(
     news_id: int,
     updated_at: str,
-    is_commented: bool,
+    story_comments_history: str,
     is_discarded: bool,
     are_comments_extracted: bool,
     comment_extraction_history: str,
@@ -114,7 +99,7 @@ def update_news_status(
         """
         UPDATE queue_news
         SET updated_at = :updated_at,
-            is_commented = :is_commented,
+            story_comments_history = :story_comments_history,
             is_discarded = :is_discarded,
             are_comments_extracted = :are_comments_extracted,
             comment_extraction_history = :comment_extraction_history
@@ -127,7 +112,7 @@ def update_news_status(
             statement,
             news_id=news_id,
             updated_at=updated_at,
-            is_commented=is_commented,
+            story_comments_history=story_comments_history,
             is_discarded=is_discarded,
             are_comments_extracted=are_comments_extracted,
             comment_extraction_history=comment_extraction_history,

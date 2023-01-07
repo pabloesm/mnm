@@ -24,9 +24,6 @@ logging.basicConfig(level=logging.INFO)
 def main() -> None:
     logging.info("main() starting")
 
-    comment_story()
-    breakpoint()
-
     try:
         news = mnm_queue.refresh()
         manageable_articles = mnm_queue.filter_news(news)

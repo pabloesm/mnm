@@ -2,13 +2,14 @@ import logging
 from subprocess import Popen, PIPE
 
 
-def comment_story() -> int:
+def comment_story(
+    username: str,
+    password: str,
+    story_id: int,
+    proxy_config: str,
+    comment: str,
+) -> int:
     script_name = "mnm.js"
-    username = "flavs"
-    password = "3dC600!deJok"
-    story_id = 3766164
-    proxy_config = '{"server": "188.74.183.10:8279", "username": "tahdrccj", "password": "phyn15nz0j3m"}'
-    comment = "De lo que se deduce que se puede ser un inteligente intelectual y un bobo social. \nMucho ha durado, que ella tiene los tiempos controlados."
 
     command = [
         "node",
