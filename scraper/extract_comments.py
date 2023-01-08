@@ -1,5 +1,8 @@
-import logging
 from subprocess import Popen, PIPE
+
+from scraper.logger import get_logger
+
+log = get_logger()
 
 DOMAIN_TO_SCRIPT = {
     "elconfidencial.com": "commentsElconfidencial.js",
@@ -21,7 +24,7 @@ def extract_comments(url_full: str, url_domain: str, news_id: int) -> int:
             print(line, end="")  # process line here
 
     if process.returncode != 0:
-        logging.warning(f"Return code: {process.returncode}")
-        logging.warning(f"Args used: {process.args}")
+        log.warning(f"Return code: {process.returncode}")
+        log.warning(f"Args used: {process.args}")
 
     return process.returncode

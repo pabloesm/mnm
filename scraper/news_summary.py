@@ -1,9 +1,10 @@
 import datetime
-import logging
 
 import bs4
 
-logging.basicConfig(level=logging.INFO)
+from scraper.logger import get_logger
+
+log = get_logger()
 
 
 class NewsSummary:
@@ -28,7 +29,7 @@ class NewsSummary:
             clicks = int(self.soup.find("span", {"id": element_id}).text)
         except AttributeError:
             # Still no clicks
-            logging.info("News without clicks found.")
+            log.info("News without clicks found.")
             clicks = 0
         return clicks
 

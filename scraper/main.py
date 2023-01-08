@@ -11,21 +11,21 @@
 """
 
 import datetime
-import logging
 
 from scraper import db
 from scraper import mnm_queue
-from scraper.comment_story import comment_story
 from scraper.extract_comments import extract_comments
+from scraper.logger import get_logger
 
-logging.basicConfig(level=logging.INFO)
+log = get_logger()
 
 
 def main() -> None:
-    logging.info("main() starting")
+    log.info("main() starting")
 
     try:
         news = mnm_queue.refresh()
+
         manageable_articles = mnm_queue.filter_news(news)
         for article in manageable_articles:
             news_id = article.get_news_id()
@@ -35,13 +35,15 @@ def main() -> None:
             mnm_queue.update_status(news_id, exit_code=exit_code)
 
         deleted_news = db.delete_news_previous_to(datetime.timedelta(hours=8))
-        logging.info(f"Deleted {len(deleted_news)} news.")
+        log.info(f"Deleted {len(deleted_news)} news.")
+
+        mnm_queue.comment_stories(news)
 
     except Exception as err:
-        logging.error(err)
-        logging.info("Scrapper failed.")
+        log.error(err)
+        log.info("Scrapper failed.")
 
-    logging.info("main() done")
+    log.info("main() done")
 
 
 if __name__ == "__main__":

@@ -87,6 +87,79 @@ def read_news(news_id: int) -> dict:
     return res.mappings().all()[0]
 
 
+def read_stories() -> List[dict]:
+    statement = text(
+        """
+        SELECT *
+        FROM queue_news;
+        """
+    )
+    with engine.connect() as con:
+        res = con.execute(statement)
+
+    return res.mappings().all()
+
+
+def read_users() -> List[dict]:
+    statement = text(
+        """
+        SELECT *
+        FROM users;
+        """
+    )
+    with engine.connect() as con:
+        res = con.execute(statement)
+
+    return res.mappings().all()
+
+
+def read_users_with_no_comment_for_story(story_id: int) -> List[dict]:
+    statement = text(
+        """
+        SELECT u.* FROM users u
+        LEFT JOIN published_comments pc
+            ON u.username = pc.username
+            AND pc.news_id = :story_id
+            WHERE pc.username IS NULL;
+        """
+    )
+    with engine.connect() as con:
+        res = con.execute(statement, story_id=story_id)
+
+    return res.mappings().all()
+
+
+def read_unpublished_comments_for_story(story_id: int) -> List[dict]:
+    statement = text(
+        """
+        SELECT c.* FROM comments c
+        LEFT JOIN published_comments pc ON c.comment_md5_id = pc.comment_md5_id
+        WHERE
+            pc.comment_md5_id IS NULL AND
+            c.news_id = :story_id;
+        """
+    )
+    with engine.connect() as con:
+        res = con.execute(statement, story_id=story_id)
+
+    return res.mappings().all()
+
+
+def number_comments_by_user_last_week() -> List[dict]:
+    statement = text(
+        """
+        SELECT username, COUNT(*) as num_comments
+        FROM published_comments
+        WHERE published_at BETWEEN NOW() - INTERVAL '7' DAY AND NOW()
+        GROUP BY username;
+        """
+    )
+    with engine.connect() as con:
+        res = con.execute(statement)
+
+    return res.mappings().all()
+
+
 def update_news_status(
     news_id: int,
     updated_at: str,
@@ -140,5 +213,28 @@ def delete_news_previous_to(timedelta: datetime.timedelta) -> List[Dict]:
     )
     with engine.connect() as con:
         res = con.execute(statement, datetime_threshold=datetime_threshold)
+
+    return res.mappings().all()
+
+
+def insert_published_comments(pub_comment: dict) -> dict:
+    statement = text(
+        """
+        INSERT INTO published_comments(
+            username,
+            news_id,
+            comment_md5_id,
+            published_at
+        ) VALUES(
+            :username,
+            :news_id,
+            :comment_md5_id,
+            :published_at
+        )
+        RETURNING *;
+        """
+    )
+    with engine.connect() as con:
+        res = con.execute(statement, **pub_comment)
 
     return res.mappings().all()

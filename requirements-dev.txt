@@ -7,5 +7,6 @@ flake8
 mypy
 pycodestyle
 pylint
+pytest
 xmlrunner
 yapf

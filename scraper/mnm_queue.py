@@ -1,17 +1,21 @@
 import datetime
 import json
-import logging
 from typing import List
+import uuid
 
 from bs4 import BeautifulSoup
 import requests
 
 from scraper import db
-from scraper.news_summary import NewsSummary
 from scraper.extract_comments import DOMAIN_TO_SCRIPT
+from scraper.logger import get_logger
+from scraper.news_summary import NewsSummary
+from scraper.ranking_comments import CommentsProcessor
+from scraper.ranking_users import comment_writing_data
 
 
-logging.basicConfig(level=logging.INFO)
+log = get_logger()
+
 
 URL = "https://old.meneame.net/queue"
 # https://www.useragents.me/
@@ -20,7 +24,7 @@ URL = "https://old.meneame.net/queue"
 def refresh() -> List[NewsSummary]:
     """Scrape the last version of the Meneame queue"""
     current_time = datetime.datetime.now()
-    logging.info(current_time)
+    log.info(current_time)
     user_agent = (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
@@ -47,7 +51,7 @@ def refresh() -> List[NewsSummary]:
         news_data["are_comments_extracted"] = False
         history = json.dumps([])
         news_data["comment_extraction_history"] = history
-        logging.info(f'Stored article: {news_data["url_full"]}')
+        log.info(f'Stored article: {news_data["url_full"]}')
 
         db.upsert_news(news_data)
 
@@ -73,7 +77,7 @@ def update_status(news_id: int, exit_code: int) -> None:
     else:
         is_discarded = False
 
-    logging.info(
+    log.info(
         {
             "news_id": news_id,
             "updated_at": current_time.isoformat(),
@@ -87,7 +91,7 @@ def update_status(news_id: int, exit_code: int) -> None:
     db.update_news_status(
         news_id=news_id,
         updated_at=current_time.isoformat(),
-        story_comments_history=current_status["story_comments_history"],
+        story_comments_history=json.dumps(current_status["story_comments_history"]),
         is_discarded=is_discarded,
         are_comments_extracted=are_comments_extracted,
         comment_extraction_history=json.dumps(history),
@@ -114,15 +118,104 @@ def filter_news(news: List[NewsSummary]) -> List[NewsSummary]:
         if news_data["is_discarded"]:
             filtering_statistics["is_discarded"] += 1
 
-        flags = [
-            news_data["is_discarded"],
-        ]
-        if any(flags):
+        # TODO: ensure this is working
+        if news_data["is_discarded"]:
             continue
         manageable_news.append(element)
 
     filtering_statistics["filtered_domain"] = len(news) - len(filtered_domain)
     filtering_statistics["manageable_news"] = len(manageable_news)
-    logging.info(filtering_statistics)
+    log.info(filtering_statistics)
 
     return manageable_news
+
+
+def comment_stories(stories_summary_in_queue: List[NewsSummary]):
+    # For commentable URLs (comments extracted)
+    # See and validate comments (votes, upper case, min. length, etc.)
+    # Filter already used comments
+    stories_id_queue = [el.get_news_id() for el in stories_summary_in_queue]
+    all_stories = db.read_stories()
+
+    # Filter out stories that are no longer in queue
+    stories_in_queue = [el for el in all_stories if el["news_id"] in stories_id_queue]
+
+    # Filter out stories without comments extracted
+    stories_w_comments = [el for el in stories_in_queue if el["are_comments_extracted"]]
+
+    for story in stories_w_comments:
+        unpublished_comments = db.read_unpublished_comments_for_story(story["news_id"])
+        processor = CommentsProcessor(unpublished_comments)
+        sorted_comments = (
+            processor.validation_mnm()
+            .filter_controversial()
+            .sort_by_votes()
+            .get_output()
+        )
+        if len(sorted_comments) == 0:
+            continue
+        best_comment = sorted_comments[0]
+        user_and_comment = comment_writing_data(best_comment)
+        log.info("\n\n======================= Comment =======================")
+        log.info(user_and_comment)
+        log.info("\n=======================================================\n\n")
+
+        if not user_and_comment:
+            return
+
+        # Publish comment
+
+        # Update queue_news.story_comments_history
+        update_story_comments_history(
+            news_id=best_comment["news_id"],
+            username=user_and_comment["username"],
+            comment_md5_id=best_comment["comment_md5_id"],
+        )
+
+        # Update published_comments
+        current_time = datetime.datetime.now()
+        published_comment = {
+            "username": user_and_comment["username"],
+            "news_id": best_comment["news_id"],
+            "comment_md5_id": best_comment["comment_md5_id"],
+            "published_at": current_time.isoformat(),
+        }
+        db.insert_published_comments(published_comment)
+
+
+def update_story_comments_history(
+    news_id: int,
+    username: str,
+    comment_md5_id: uuid.UUID,
+) -> None:
+    """Update story comments history"""
+    current_time = datetime.datetime.now()
+
+    current_status = db.read_news(news_id)
+    history = current_status["story_comments_history"]
+    history.append(
+        {
+            "username": username,
+            "comment_md5_id": str(comment_md5_id),
+            "datetime": current_time.isoformat(),
+        }
+    )
+
+    log.info(
+        {
+            "news_id": news_id,
+            "updated_at": current_time.isoformat(),
+            "story_comments_history": history,
+        }
+    )
+
+    db.update_news_status(
+        news_id=news_id,
+        updated_at=current_time.isoformat(),
+        story_comments_history=json.dumps(history),
+        is_discarded=current_status["is_discarded"],
+        are_comments_extracted=current_status["are_comments_extracted"],
+        comment_extraction_history=json.dumps(
+            current_status["comment_extraction_history"]
+        ),
+    )
