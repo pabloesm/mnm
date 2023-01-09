@@ -4,6 +4,7 @@ from typing import List
 import uuid
 
 from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
 import requests
 
 from scraper import db
@@ -12,7 +13,6 @@ from scraper.logger import get_logger
 from scraper.news_summary import NewsSummary
 from scraper.ranking_comments import CommentsProcessor
 from scraper.ranking_users import comment_writing_data
-
 
 log = get_logger()
 
@@ -25,11 +25,8 @@ def refresh() -> List[NewsSummary]:
     """Scrape the last version of the queue"""
     current_time = datetime.datetime.now()
     log.info(current_time)
-    user_agent = (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
-    )
-
+    ua = UserAgent()
+    user_agent = ua.google
     headers = {"User-Agent": user_agent}
     html = requests.get(URL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
