@@ -27,10 +27,12 @@ def main() -> None:
         news = mnm_queue.refresh()
 
         manageable_articles = mnm_queue.filter_news(news)
+        log.info("\n\n ----------- Comment extraction -----------")
         for article in manageable_articles:
             news_id = article.get_news_id()
             url_full = article.get_url_full()
             url_domain = article.get_url_domain()
+            log.info(f"Extracting url {url_full}")
             exit_code = extract_comments(url_full, url_domain, news_id)
             mnm_queue.update_status(news_id, exit_code=exit_code)
 

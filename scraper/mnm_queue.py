@@ -22,7 +22,7 @@ URL = "https://old.meneame.net/queue"
 
 
 def refresh() -> List[NewsSummary]:
-    """Scrape the last version of the Meneame queue"""
+    """Scrape the last version of the queue"""
     current_time = datetime.datetime.now()
     log.info(current_time)
     user_agent = (
@@ -51,9 +51,9 @@ def refresh() -> List[NewsSummary]:
         news_data["are_comments_extracted"] = False
         history = json.dumps([])
         news_data["comment_extraction_history"] = history
-        log.info(f'Stored article: {news_data["url_full"]}')
 
         db.upsert_news(news_data)
+        log.info(f'Stored article: {news_data["url_full"]}')
 
     return summaries
 
@@ -134,14 +134,18 @@ def comment_stories(stories_summary_in_queue: List[NewsSummary]):
     # For commentable URLs (comments extracted)
     # See and validate comments (votes, upper case, min. length, etc.)
     # Filter already used comments
+    log.info("\n\n ----------- Commenting stories -----------")
     stories_id_queue = [el.get_news_id() for el in stories_summary_in_queue]
     all_stories = db.read_stories()
+    log.info("Number of stories: %d" % (len(all_stories)))
 
     # Filter out stories that are no longer in queue
     stories_in_queue = [el for el in all_stories if el["news_id"] in stories_id_queue]
+    log.info("Number of stories in the queue: %d" % (len(stories_in_queue)))
 
     # Filter out stories without comments extracted
     stories_w_comments = [el for el in stories_in_queue if el["are_comments_extracted"]]
+    log.info("Number of stories in with comments: %d" % (len(stories_w_comments)))
 
     for story in stories_w_comments:
         unpublished_comments = db.read_unpublished_comments_for_story(story["news_id"])
@@ -156,9 +160,9 @@ def comment_stories(stories_summary_in_queue: List[NewsSummary]):
             continue
         best_comment = sorted_comments[0]
         user_and_comment = comment_writing_data(best_comment)
-        log.info("\n\n======================= Comment =======================")
+        log.info("\n\n~~~~~~~~~~~~~~~~~~~~~~~~ Comment ~~~~~~~~~~~~~~~~~~~~~~~~")
         log.info(user_and_comment)
-        log.info("\n=======================================================\n\n")
+        log.info("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
 
         if not user_and_comment:
             return
@@ -180,6 +184,8 @@ def comment_stories(stories_summary_in_queue: List[NewsSummary]):
             "comment_md5_id": best_comment["comment_md5_id"],
             "published_at": current_time.isoformat(),
         }
+        log.info("Insert published comment")
+        log.info(str(published_comment["comment_md5_id"]))
         db.insert_published_comments(published_comment)
 
 
@@ -201,6 +207,7 @@ def update_story_comments_history(
         }
     )
 
+    log.info("Updated story comments history")
     log.info(
         {
             "news_id": news_id,
