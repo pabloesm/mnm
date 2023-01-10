@@ -51,7 +51,7 @@ log.info(args_info);
 
 chromium
   .launch({
-    headless: false,
+    headless: true,
     proxy: proxyConfig,
   })
   .then(async (browser) => {
