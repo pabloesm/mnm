@@ -1,10 +1,13 @@
 import crypto from "crypto";
 import pkg from "pg";
+
+import { log } from "./logger.js";
+
 const { Pool } = pkg;
 
-let connString = process.env.DB_CONN_STRING
-// TODO: make it more robust 
-connString = connString.concat('&ssl=true')
+let connString = process.env.DB_CONN_STRING;
+// TODO: make it more robust
+connString = connString.concat("&ssl=true");
 
 const pool = new Pool({
   connectionString: connString,
@@ -13,7 +16,7 @@ const pool = new Pool({
 });
 
 pool.on("error", (err) => {
-  console.error("Error", err.message, err.stack);
+  log.error("Error", err.message, err.stack);
 });
 
 async function query(text, params) {
@@ -46,19 +49,19 @@ RETURNING *
 `;
 
 export async function upsertComments(comments, newsId, urlFull) {
-  console.log("\nUpserting comments...");
-  console.log(`newsId: ${newsId}`);
-  console.log(`url: ${urlFull}`);
-  
+  log.debug("\nUpserting comments...");
+  log.debug(`newsId: ${newsId}`);
+  log.debug(`url: ${urlFull}`);
+
   for (let i = 0; i < comments.length; i++) {
-    console.log(`Comment ${i}: ${comments[i].comment.substring(0, 80)}`);
+    log.debug(`Comment ${i}: ${comments[i].comment.substring(0, 80)}`);
     try {
       const currentTime = new Date();
 
       const hash = crypto.createHash("md5");
       hash.update(comments[i].comment);
       const hashDigest = hash.digest("hex");
-      console.log(hashDigest)
+      log.debug(hashDigest);
 
       const values = [
         hashDigest,
@@ -70,9 +73,9 @@ export async function upsertComments(comments, newsId, urlFull) {
         currentTime.toISOString(),
       ];
       const res = await query(sqlQuery, values);
-      // console.log(res.rows[0]);
+      // log.info(res.rows[0]);
     } catch (err) {
-      console.log(err);
+      log.error(err);
       return 1;
     }
   }

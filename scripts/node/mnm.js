@@ -21,14 +21,17 @@ node inspect mnm.js \
 
 import { chromium } from "playwright-extra";
 import minimist from "minimist";
+import path from "path";
 import { publicIpv4 } from "public-ip";
 import stealth from "puppeteer-extra-plugin-stealth";
 import userAgent from "user-agents";
 
+import { log } from "./logger.js";
 import { Utils } from "./utils.js";
 
 chromium.use(stealth);
 
+const scriptName = path.basename(process.argv[1]);
 const args = minimist(process.argv.slice(2));
 
 const username = args.username;
@@ -44,11 +47,11 @@ const args_info = {
   proxyConfig: proxyConfig,
   comment: comment,
 };
-console.log(args_info);
+log.info(args_info);
 
 chromium
   .launch({
-    headless: true,
+    headless: false,
     proxy: proxyConfig,
   })
   .then(async (browser) => {
@@ -69,11 +72,12 @@ chromium
       await mnm.writeComment(comment);
       process.exitCode = 0;
     } catch (error) {
-      console.error(error);
+      log.error(error);
       process.exitCode = 1;
     }
 
-    console.log("All done ✨");
+    log.info(`All done in ${scriptName} ✨`);
+    await browser.close();
   });
 
 class Meneame {
@@ -105,10 +109,10 @@ class Meneame {
       });
       if (cookiesPopup) {
         cookiesPopup.click();
-        console.log("Cookies popup closed.");
+        log.info("Cookies popup closed.");
       }
     } catch (error) {
-      console.error(error);
+      log.error(error);
     }
   }
 
@@ -144,12 +148,12 @@ async function ipAddressAndProxyCheck(context) {
   const page = await context.newPage();
 
   const myPublicIP = await publicIpv4();
-  console.log("Host IP address: ", myPublicIP);
+  log.info("Host IP address: ", myPublicIP);
 
   await page.goto("https://httpbin.org/ip");
   const ipInfoText = await page.textContent("*");
   const ipInfoJson = JSON.parse(ipInfoText);
-  console.log("Proxy IP address: ", ipInfoJson["origin"]);
+  log.info("Proxy IP address: ", ipInfoJson["origin"]);
 
   if (myPublicIP === ipInfoJson["origin"]) {
     page.close();

@@ -1,35 +1,29 @@
-#!/usr/bin/nodejs
-
-/*
-Return codes:
- - 0: successfuly comments extracted and stored 
- - 1:  
-
-Calling example (news_id should exist in the DB to write store the data):
-node inspect commentsElconfidencial.js \
-  --url_full=https://www.elconfidencial.com/espana/aragon/2022-11-27/espana-vaciada-partido-politico-confederado-irrumpir-congreso_3530332/ \
-  --url_domain=elconfidencial.com \
-  --news_id=3764927 
-
-  
-  */
 import { chromium } from "playwright-extra";
 import minimist from "minimist";
 import { parse } from "node-html-parser";
+import path from "path";
 import pRetry from "p-retry";
 import { publicIpv4 } from "public-ip";
 import stealth from "puppeteer-extra-plugin-stealth";
 import userAgent from "user-agents";
 
 import { upsertComments } from "./db.js";
-import { Utils } from "./utils.js";
+import { log } from "./logger.js";
 
 chromium.use(stealth);
 
+const scriptName = path.basename(process.argv[1]);
 const args = minimist(process.argv.slice(2));
 
+/*
+node inspect commentsElconfidencial.js \
+  --url_full=https://www.elconfidencial.com/espana/aragon/2022-11-27/espana-vaciada-partido-politico-confederado-irrumpir-congreso_3530332/ \
+  --url_domain=elconfidencial.com \
+  --news_id=3767637 
+""*/
 // Print the parsed arguments
-console.log(args);
+log.info(args);
+debugger;
 
 const urlFull = args.url_full;
 const urlDomain = args.url_domain;
@@ -37,12 +31,7 @@ const newsId = args.news_id;
 
 chromium
   .launch({
-    headless: true,
-    // proxy: {
-    //   server: "188.74.183.10:8279",
-    //   username: "tahdrccj",
-    //   password: "phyn15nz0j3m",
-    // },
+    headless: false,
   })
   .then(async (browser) => {
     // Create a new incognito browser context with a proper user agent
@@ -55,22 +44,22 @@ chromium
 
     // const page = await context.newPage();
     const myPublicIP = await publicIpv4();
-    console.log("IP address: ", myPublicIP);
+    log.info("Actual IP:");
+    log.info(myPublicIP);
 
     const elConfidencial = new ElConfidencial(context);
     await elConfidencial.loadUrlRetry(urlFull);
     const comments = await elConfidencial.getCommentsRetry();
-    console.log(`Extracted ${comments.length} comments`)
+    log.debug(comments);
 
-    let exitCode = await upsertComments(comments, newsId, urlFull);
+    await upsertComments(comments, newsId, urlFull);
 
-    console.log("All done ✨");
+    log.info(`All done in ${scriptName} ✨`);
     await browser.close();
-    process.exitCode = exitCode;
   });
 
 class ElConfidencial {
-  constructor(context) {
+  constructor(context, Utils) {
     this.context = context;
     this.Utils = Utils;
   }
@@ -79,14 +68,14 @@ class ElConfidencial {
     this.page = await this.context.newPage();
     await this.page.goto(url);
 
-    await this.page.screenshot({ path: `${newsId}_01_gotoUrl.png` });
+    await this.page.screenshot({ path: "01_gotoUrl.png" });
 
     try {
       const cookiesButtonText =
         "Aceptar y cerrar: Aceptar nuestro procesamiento de datos y cerrar";
       await this.page.getByRole("button", { name: cookiesButtonText }).click();
     } catch (error) {
-      console.error(error);
+      log.error(error);
     }
 
     try {
@@ -95,10 +84,10 @@ class ElConfidencial {
         .getByRole("button", { name: subscriptionButtonText })
         .click();
     } catch (error) {
-      console.error(error);
+      log.error(error);
     }
 
-    await this.page.screenshot({ path: `${newsId}_02_loadUrl.png` });
+    await this.page.screenshot({ path: "02_loadUrl.png" });
   }
 
   async loadUrlRetry(url) {
@@ -138,7 +127,7 @@ class ElConfidencial {
 
       commentsRes.push(parsedComment);
     }
-    await this.page.screenshot({ path: `${newsId}_03_getComments.png` });
+    await this.page.screenshot({ path: "screenshot_getComments.png" });
     return commentsRes;
   }
 
@@ -148,5 +137,16 @@ class ElConfidencial {
 
   async _scrollToComments() {
     await this.page.evaluate(Utils.scrollToDownSmoth);
+  }
+}
+
+class Utils {
+  static async scrollToDownSmoth() {
+    // https://github.com/microsoft/playwright/issues/4302#issuecomment-1132919529
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    for (let i = 0; i < document.body.scrollHeight; i += 100) {
+      window.scrollTo(0, i);
+      await delay(100);
+    }
   }
 }

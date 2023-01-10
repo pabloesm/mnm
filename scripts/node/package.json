@@ -23,6 +23,7 @@
         "playwright-extra": "^4.3.5",
         "public-ip": "^6.0.1",
         "puppeteer-extra-plugin-stealth": "^2.11.1",
-        "user-agents": "^1.0.1103"
+        "user-agents": "^1.0.1103",
+        "winston": "^3.8.2"
     }
 }
