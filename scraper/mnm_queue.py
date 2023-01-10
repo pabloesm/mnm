@@ -4,13 +4,13 @@ from typing import List
 import uuid
 
 from bs4 import BeautifulSoup
-from fake_useragent import UserAgent
 import requests
 
 from scraper import db
 from scraper.extract_comments import DOMAIN_TO_SCRIPT
 from scraper.logger import get_logger
 from scraper.news_summary import NewsSummary
+from scraper.random_user_agent import random_ua
 from scraper.ranking_comments import CommentsProcessor
 from scraper.ranking_users import comment_writing_data
 
@@ -18,15 +18,13 @@ log = get_logger()
 
 
 URL = "https://old.meneame.net/queue"
-# https://www.useragents.me/
 
 
 def refresh() -> List[NewsSummary]:
     """Scrape the last version of the queue"""
     current_time = datetime.datetime.now()
     log.info(current_time)
-    ua = UserAgent()
-    user_agent = ua.google
+    user_agent = random_ua()[0]
     headers = {"User-Agent": user_agent}
     html = requests.get(URL, headers=headers)
     soup = BeautifulSoup(html.text, "html.parser")
