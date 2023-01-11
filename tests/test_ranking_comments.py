@@ -73,6 +73,7 @@ def test_validation_mnm():
 
 
 def test_CommentsProcessor(comments_sample):
+    # TODO: Update because filter_few_positive_votes()
     # Arrange
     expected_result_ids = [
         "440844391cc02dbcba5ee1f01d7e3913",
@@ -90,7 +91,11 @@ def test_CommentsProcessor(comments_sample):
 
     # Act
     result = (
-        processor.validation_mnm().filter_controversial().sort_by_votes().get_output()
+        processor.validation_mnm()
+        .filter_controversial()
+        .filter_few_positive_votes()
+        .sort_by_votes()
+        .get_output()
     )
 
     # Assert

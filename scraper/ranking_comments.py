@@ -12,8 +12,6 @@ log = get_logger()
 class CommentsProcessor:
     """Applying all processing steps through chaining"""
 
-    # TODO: minimum positive votes
-
     def __init__(self, comments: List[Dict]):
         self.comments = comments
 
@@ -25,6 +23,10 @@ class CommentsProcessor:
         self.comments = filter_controversial(self.comments)
         return self
 
+    def filter_few_positive_votes(self):
+        self.comments = filter_few_positive_votes(self.comments)
+        return self
+
     def sort_by_votes(self):
         self.comments = sort_by_votes(self.comments)
         return self
@@ -34,10 +36,20 @@ class CommentsProcessor:
 
 
 def filter_controversial(comments: List[Dict]) -> List[Dict]:
-    limit_negative_votes = 5
-    result = [el for el in comments if el["votes_negative"] < limit_negative_votes]
+    maximum_negative_votes = 5
+    result = [el for el in comments if el["votes_negative"] < maximum_negative_votes]
     filtered = len(comments) - len(result)
     log.debug("Number of controversial comments filtered out: %d" % (filtered))
+    return result
+
+
+def filter_few_positive_votes(comments: List[Dict]) -> List[Dict]:
+    minimum_positive_votes = 3
+    result = [el for el in comments if el["votes_positive"] >= minimum_positive_votes]
+    filtered = len(comments) - len(result)
+    log.debug(
+        "Number of comments filtered out due to few postivie votes: %d" % (filtered)
+    )
     return result
 
 

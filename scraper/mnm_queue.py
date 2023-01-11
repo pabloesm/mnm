@@ -153,6 +153,7 @@ def comment_stories(stories_summary_in_queue: List[NewsSummary]):
         sorted_comments = (
             processor.validation_mnm()
             .filter_controversial()
+            .filter_few_positive_votes()
             .sort_by_votes()
             .get_output()
         )
