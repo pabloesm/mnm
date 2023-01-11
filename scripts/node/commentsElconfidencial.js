@@ -31,7 +31,7 @@ const newsId = args.news_id;
 
 chromium
   .launch({
-    headless: false,
+    headless: true,
   })
   .then(async (browser) => {
     // Create a new incognito browser context with a proper user agent
