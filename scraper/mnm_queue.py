@@ -132,15 +132,20 @@ def comment_stories(stories_summary_in_queue: List[NewsSummary]):
     log.info("\n\n ----------- Commenting stories -----------")
     stories_id_queue = [el.get_news_id() for el in stories_summary_in_queue]
     all_stories = db.read_stories()
-    log.info("Number of stories: %d" % (len(all_stories)))
 
     # Filter out stories that are no longer in queue
     stories_in_queue = [el for el in all_stories if el["news_id"] in stories_id_queue]
-    log.info("Number of stories in the queue: %d" % (len(stories_in_queue)))
 
     # Filter out stories without comments extracted
     stories_w_comments = [el for el in stories_in_queue if el["are_comments_extracted"]]
-    log.info("Number of stories in with comments: %d" % (len(stories_w_comments)))
+
+    log.info(
+        {
+            "stories_in_db": len(all_stories),
+            "stories_in_queue": len(stories_in_queue),
+            "stories_in_queue_w_comments": len(stories_w_comments),
+        }
+    )
 
     for story in stories_w_comments:
         unpublished_comments = db.read_unpublished_comments_for_story(story["news_id"])
@@ -151,12 +156,20 @@ def comment_stories(stories_summary_in_queue: List[NewsSummary]):
             .sort_by_votes()
             .get_output()
         )
+        log.info(
+            {
+                "story_id": story["news_id"],
+                "unpublished_comments": len(unpublished_comments),
+                "processed_comments": len(sorted_comments),
+            }
+        )
+
         if len(sorted_comments) == 0:
             continue
+
         best_comment = sorted_comments[0]
-        user_and_comment = comment_writing_data(best_comment)
         log.info("\n\n~~~~~~~~~~~~~~~~~~~~~~~~ Comment ~~~~~~~~~~~~~~~~~~~~~~~~")
-        log.info(user_and_comment)
+        user_and_comment = comment_writing_data(best_comment)
         log.info("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
 
         if not user_and_comment:
@@ -202,15 +215,6 @@ def update_story_comments_history(
         }
     )
 
-    log.info("Updated story comments history")
-    log.info(
-        {
-            "news_id": news_id,
-            "updated_at": current_time.isoformat(),
-            "story_comments_history": history,
-        }
-    )
-
     db.update_news_status(
         news_id=news_id,
         updated_at=current_time.isoformat(),
@@ -220,4 +224,13 @@ def update_story_comments_history(
         comment_extraction_history=json.dumps(
             current_status["comment_extraction_history"]
         ),
+    )
+
+    log.info(
+        {
+            "event:": "Updated story comments history",
+            "news_id": news_id,
+            "updated_at": current_time.isoformat(),
+            "story_comments_history": history,
+        }
     )
