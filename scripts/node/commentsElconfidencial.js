@@ -44,8 +44,7 @@ chromium
 
     // const page = await context.newPage();
     const myPublicIP = await publicIpv4();
-    log.info("Actual IP:");
-    log.info(myPublicIP);
+    log.info({ public_IP_address: myPublicIP });
 
     const elConfidencial = new ElConfidencial(context);
     await elConfidencial.loadUrlRetry(urlFull);
