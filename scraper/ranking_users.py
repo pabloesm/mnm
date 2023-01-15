@@ -2,7 +2,7 @@
 - Filter out users with comments in the story
 - Select user with less comments today
 """
-
+import random
 from typing import (
     Dict,
     Optional,
@@ -42,5 +42,5 @@ def get_suitable_user(comment: dict) -> Optional[Dict]:
     if len(users) == 0:
         return
 
-    best_user = users[0]
-    return best_user
+    random_user = random.choice(users)
+    return random_user
