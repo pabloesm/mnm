@@ -148,12 +148,12 @@ async function ipAddressAndProxyCheck(context) {
   const page = await context.newPage();
 
   const myPublicIP = await publicIpv4();
-  log.info("Host IP address: ", myPublicIP);
+  log.info({ host_IP_address: myPublicIP });
 
   await page.goto("https://httpbin.org/ip");
   const ipInfoText = await page.textContent("*");
   const ipInfoJson = JSON.parse(ipInfoText);
-  log.info("Proxy IP address: ", ipInfoJson["origin"]);
+  log.info({ proxy_IP_address: ipInfoJson["origin"] });
 
   if (myPublicIP === ipInfoJson["origin"]) {
     page.close();
