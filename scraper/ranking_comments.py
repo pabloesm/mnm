@@ -39,7 +39,7 @@ def filter_controversial(comments: List[Dict]) -> List[Dict]:
     maximum_negative_votes = 5
     result = [el for el in comments if el["votes_negative"] < maximum_negative_votes]
     filtered = len(comments) - len(result)
-    log.debug("Number of controversial comments filtered out: %d" % (filtered))
+    log.debug("Number of controversial comments filtered out: %d", filtered)
     return result
 
 
@@ -47,9 +47,7 @@ def filter_few_positive_votes(comments: List[Dict]) -> List[Dict]:
     minimum_positive_votes = 3
     result = [el for el in comments if el["votes_positive"] >= minimum_positive_votes]
     filtered = len(comments) - len(result)
-    log.debug(
-        "Number of comments filtered out due to few postivie votes: %d" % (filtered)
-    )
+    log.debug("Number of comments filtered out due to few postivie votes: %d", filtered)
     return result
 
 
@@ -77,6 +75,6 @@ def validation_mnm(comment: dict) -> bool:
         ]
     ):
         # Check there are at least a valid char
-        log.debug("Comment filtered out in validation: %s" % (comment))
+        log.debug("Comment filtered out in validation: %s", comment)
         return False
     return True

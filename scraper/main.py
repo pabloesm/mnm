@@ -32,12 +32,12 @@ def main() -> None:
             news_id = article.get_news_id()
             url_full = article.get_url_full()
             url_domain = article.get_url_domain()
-            log.info(f"Extracting url {url_full}")
+            log.info("Extracting url %s", url_full)
             exit_code = extract_comments(url_full, url_domain, news_id)
             mnm_queue.update_status(news_id, exit_code=exit_code)
 
         deleted_news = db.delete_news_previous_to(datetime.timedelta(hours=8))
-        log.info(f"Deleted {len(deleted_news)} news.")
+        log.info("Deleted %d news.", len(deleted_news))
 
         mnm_queue.comment_stories(news)
 

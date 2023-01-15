@@ -29,7 +29,7 @@ def comment_story(
             print(line, end="")  # process line here
 
     if process.returncode != 0:
-        log.warning(f"Return code: {process.returncode}")
-        log.warning(f"Args used: {process.args}")
+        log.warning("Return code: %s", process.returncode)
+        log.warning("Args used: %s", process.args)
 
     return process.returncode

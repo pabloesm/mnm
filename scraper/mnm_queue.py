@@ -26,7 +26,7 @@ def refresh() -> List[NewsSummary]:
     log.info(current_time)
     user_agent = random_ua()[0]
     headers = {"User-Agent": user_agent}
-    html = requests.get(URL, headers=headers)
+    html = requests.get(URL, headers=headers, timeout=20)
     soup = BeautifulSoup(html.text, "html.parser")
     newswrap = soup.find_all(id="newswrap")
     assert len(newswrap) == 1
@@ -48,7 +48,7 @@ def refresh() -> List[NewsSummary]:
         news_data["comment_extraction_history"] = history
 
         db.upsert_news(news_data)
-        log.info(f'Stored article: {news_data["url_full"]}')
+        log.info("Stored article: %s", {news_data["url_full"]})
 
     return summaries
 

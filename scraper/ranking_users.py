@@ -1,6 +1,6 @@
 """
 - Filter out users with comments in the story
-- Select user with less comments today 
+- Select user with less comments today
 """
 
 from typing import (
