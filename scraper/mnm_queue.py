@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import requests
 
 from scraper import db
+from scraper.comment_story import comment_story
 from scraper.extract_comments import DOMAIN_TO_SCRIPT
 from scraper.logger import get_logger
 from scraper.news_summary import NewsSummary
@@ -171,12 +172,17 @@ def comment_stories(stories_summary_in_queue: List[NewsSummary]):
         best_comment = sorted_comments[0]
         log.info("\n\n~~~~~~~~~~~~~~~~~~~~~~~~ Comment ~~~~~~~~~~~~~~~~~~~~~~~~")
         user_and_comment = comment_writing_data(best_comment)
+        log.info(user_and_comment)
         log.info("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
 
         if not user_and_comment:
             return
 
         # Publish comment
+        return_code = comment_story(**user_and_comment)
+        log.warning({"publish_comment_returncode": return_code})
+        if return_code:
+            return
 
         # Update queue_news.story_comments_history
         update_story_comments_history(
