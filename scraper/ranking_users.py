@@ -21,7 +21,7 @@ def comment_writing_data(comment: dict) -> Optional[Dict]:
 
     user_and_comment = {
         "username": user_info["username"],
-        "pass": user_info["pass"],
+        "password": user_info["pass"],
         "story_id": comment["news_id"],
         "proxy_config": user_info["proxy_info"],
         "comment": comment["comment_text"],
