@@ -178,8 +178,13 @@ def comment_stories(stories_summary_in_queue: List[NewsSummary]):
         if not user_and_comment:
             return
 
-        # Publish comment
-        return_code = comment_story(**user_and_comment)
+        return_code = comment_story(
+            user_and_comment["username"],
+            user_and_comment["password"],
+            user_and_comment["story_id"],
+            json.dumps(user_and_comment["proxy_config"]),
+            user_and_comment["comment"],
+        )
         log.warning({"publish_comment_returncode": return_code})
         if return_code:
             return
