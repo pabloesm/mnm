@@ -136,8 +136,7 @@ class Meneame {
     );
     await elementTextArea.fill(comment);
     await this.page.screenshot({ path: `${this.username}_03_mnm_comment.png` });
-    log.warn("Skipping 'enviar' button click.");
-    // await this.page.getByText("enviar").click();
+    await this.page.getByText("enviar").click();
   }
 
   async _scrollToBottom() {
